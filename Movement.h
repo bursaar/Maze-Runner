@@ -6,6 +6,7 @@ enum MOVEMENT { NONE, UP, RIGHT, DOWN, LEFT };
 
 // Movement controller
 int int_movement = NONE;
+int int_enemyMovement = NONE;
 bool bl_freeToMove = true;
 
 // Function to help clip to array co-ordinates

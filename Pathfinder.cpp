@@ -341,29 +341,15 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	// Check the state of the cell above
 	if (gl_up.xloc != 0 && gl_up.yloc != 0)
 	{
-		switch (cell_currentNodeMap[gl_up.xloc][gl_up.yloc].state)
+		switch (cell_nodeList_open[(gl_up.yloc * 25) + gl_up.xloc].state)
 		{
 		case 0:	// Is the node open?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_up.xloc][gl_up.yloc];						// Copy cell to 
-				  cell_nodeList_open[openListIndex].gValue = NODEOPEN;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODEOPEN);
 		} break;
 		case 1:	// Is the node closed?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_up.xloc][gl_up.yloc];
-				  cell_nodeList_open[openListIndex].gValue = NODECLOSED;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODECLOSED);
 		} break;
 		}
 	}
@@ -371,29 +357,15 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	// Check the state of the cell to the right
 	if (gl_right.xloc != 0 && gl_right.yloc != 0)
 	{
-		switch (cell_currentNodeMap[gl_right.xloc][gl_right.yloc].state)
+		switch (cell_nodeList_open[(gl_right.yloc * 25) + gl_right.xloc].state)
 		{
 		case 0:	// Is the node open?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_right.xloc][gl_right.yloc];						// Copy cell to 
-				  cell_nodeList_open[openListIndex].gValue = NODEOPEN;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_right, pFrom, NODEOPEN);
 		} break;
 		case 1:	// Is the node closed?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_right.xloc][gl_right.yloc];
-				  cell_nodeList_open[openListIndex].gValue = NODECLOSED;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_right, pFrom, NODECLOSED);
 		} break;
 		}
 	}
@@ -401,29 +373,15 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	// Check the state of the cell below
 	if (gl_down.xloc != 0 && gl_down.yloc != 0)
 	{
-		switch (cell_currentNodeMap[gl_down.xloc][gl_down.yloc].state)
+		switch (cell_nodeList_open[(gl_down.yloc * 25) + gl_down.xloc].state)
 		{
 		case 0:	// Is the node open?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_down.xloc][gl_down.yloc];						// Copy cell to 
-				  cell_nodeList_open[openListIndex].gValue = NODEOPEN;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODEOPEN);
 		} break;
 		case 1:	// Is the node closed?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_down.xloc][gl_down.yloc];
-				  cell_nodeList_open[openListIndex].gValue = NODECLOSED;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODECLOSED);
 		} break;
 		}
 	}
@@ -431,29 +389,15 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	// Check the state of the cell below
 	if (gl_left.xloc != 0 && gl_left.yloc != 0)
 	{
-		switch (cell_currentNodeMap[gl_left.xloc][gl_left.yloc].state)
+		switch (cell_nodeList_open[(gl_left.yloc * 25) + gl_left.xloc].state)
 		{
 		case 0:	// Is the node passable?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_left.xloc][gl_left.yloc];						// Copy cell from map to open list
-				  cell_nodeList_open[openListIndex].gValue = NODEOPEN;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_left, pFrom, NODEOPEN);
 		} break;
 		case 1:	// Is the node blocked?
 		{
-				  cell_nodeList_open[openListIndex] = cell_currentNodeMap[gl_left.xloc][gl_left.yloc];
-				  cell_nodeList_open[openListIndex].gValue = NODECLOSED;
-				  if (cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue > 0)
-				  {
-					  cell_nodeList_open[openListIndex].gValue += cell_currentNodeMap[pFrom.xloc][pFrom.yloc].gValue;
-				  }
-				  cell_nodeList_open[openListIndex].parent = &cell_currentNodeMap[pFrom.xloc][pFrom.yloc];
-				  openListIndex++;
+					NodesOpenToClosed(closedListIndex, gl_left, pFrom, NODECLOSED);
 		} break;
 		}
 	}
@@ -463,4 +407,18 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 
 	cout << "Error returned from cPathfinder::NextMove();" << endl;
 	return gl_default;
+}
+
+
+void cPathfinder::NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, gridloc pPosCheckFrom, int pFlag)
+{
+	cell_nodeList_closed[pClosedListIndex] = cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc];
+	cell_nodeList_closed[pClosedListIndex].gValue = pFlag;
+	if (cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].gValue > 0)
+	{
+		cell_nodeList_closed[pClosedListIndex].gValue += cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].gValue;
+	}
+	cell_nodeList_closed[pClosedListIndex].parent = &cell_nodeList_closed[(pPosCheckFrom.yloc * 25) + pPosCheckFrom.xloc];
+	pClosedListIndex++;
+	return;
 }

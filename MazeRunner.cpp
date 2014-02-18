@@ -173,55 +173,122 @@ int main(int argn, char * args[])
 					int_movement = UP;
 				}
 			}
+
+			// Moving the player
 			
-				if (int_movement == UP
-					&& fl_playerY > 0												
+			switch (int_movement)
+			{
+			case UP:
+				if (fl_playerY > 0
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, UP)
-					)								
+					)
 				{
 					fl_playerY -= rect_player.h;						// Up
 					int_movement = NONE;
 					bl_freeToMove = false;
 					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.CalculateH(gl_playerCurrentPos, gl_enemy, gl_goal);
+					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
+					int_enemyMovement = UP;
 				}
+				break;
 
-				if (int_movement == RIGHT
-					&& fl_playerX < (rect_player.w * 25)
+			case RIGHT:
+				if (fl_playerX < (rect_player.w * 25)
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, RIGHT)
-					)																	
+					)
 				{
 					fl_playerX += rect_player.w;							// Right
 					int_movement = NONE;
 					bl_freeToMove = false;
 					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.CalculateH(gl_playerCurrentPos, gl_enemy, gl_goal);
+					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
+					int_enemyMovement = RIGHT;
 				}
+				break;
 
-				if (int_movement == DOWN
-					&& fl_playerY < (rect_player.h * 25)
+			case DOWN:
+				if (fl_playerY < (rect_player.h * 25)
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, DOWN)
-					)								
+					)
 				{
 					fl_playerY += rect_player.h;						// Down
 					int_movement = NONE;
 					bl_freeToMove = false;
 					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.CalculateH(gl_playerCurrentPos, gl_enemy, gl_goal);
+					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
+					int_enemyMovement = DOWN;
 				}
+				break;
 
-				if (int_movement == LEFT
-					&& fl_playerX > 0
+			case LEFT:
+				if (fl_playerX > 0
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, LEFT)
-					)								
+					)
 				{
 					fl_playerX -= rect_player.w;						// Left
 					int_movement = NONE;
 					bl_freeToMove = false;
 					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.CalculateH(gl_playerCurrentPos, gl_enemy, gl_goal);
+					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
+					int_enemyMovement = LEFT;
 				}
+				break;
+			}
 			
+
+			// Moving the enemy
+
+			switch (int_enemyMovement)
+			{
+			case UP:
+				if (fl_enemyY > 0
+					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, UP)
+					)
+				{
+					fl_enemyY -= rect_enemy.h;						// Up
+					int_enemyMovement = NONE;
+					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
+					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
+				}
+				break;
+
+			case RIGHT:
+				if (fl_enemyX < (rect_enemy.w * 25)
+					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, RIGHT)
+					)
+				{
+					fl_enemyX += rect_enemy.w;							// Right
+					int_enemyMovement = NONE;
+					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
+					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
+				}
+				break;
+
+			case DOWN:
+				if (fl_enemyY < (rect_enemy.h * 25)
+					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, DOWN)
+					)
+				{
+					fl_enemyY += rect_enemy.h;						// Down
+					int_enemyMovement = NONE;
+					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
+					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
+				}
+				break;
+
+			case LEFT:
+				if (fl_enemyX > 0
+					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, LEFT)
+					)
+				{
+					fl_enemyX -= rect_enemy.w;						// Left
+					int_enemyMovement = NONE;
+					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
+					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
+				}
+				break;
+			}
+
 
 			if (
 				!KeyboardState[SDL_SCANCODE_UP]

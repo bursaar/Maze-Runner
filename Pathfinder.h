@@ -15,6 +15,7 @@ public:
 	gridloc	mGl_playerPos;
 	gridloc mGl_enemyPos;
 	gridloc mGl_goalPos;
+	const enum enemyMovement {ENEMYUP, ENEMYRIGHT, ENEMYDOWN, ENEMYLEFT};
 
 	/*
 	===	Member Functions ===
@@ -57,4 +58,5 @@ private:
 	// Calculate current H value
 	// ===============================
 	void CalculateH(bool print = 0);
+	void NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, gridloc pPosCheckFrom, int pFlag);
 };
