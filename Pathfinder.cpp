@@ -21,36 +21,44 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 			case 0:
 				cell_currentNodeMap[xindex][yindex].state = 0;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
-				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
-				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
-				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.xloc = xindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.yloc = yindex;
+				// cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				// cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				// cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 
 			case 1:
 				cell_currentNodeMap[xindex][yindex].state = 1;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
-				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
-				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
-				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.xloc = xindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.yloc = yindex;
+				// cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				// cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				// cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 
 			case 3:
 				cell_currentNodeMap[xindex][yindex].state = 0;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
-				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
-				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
-				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.xloc = xindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.yloc = yindex;
+				// cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				// cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				// cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 
 			case 4:
 				cell_currentNodeMap[xindex][yindex].state = 1;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
-				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
-				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
-				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.xloc = xindex;
+				cell_currentNodeMap[xindex][yindex].mGl_location.yloc = yindex;
+				// cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				// cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				// cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 			}
@@ -68,10 +76,14 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 	// Assign positions
 	// Player:
 	mGl_playerPos = pGl_playerPos;
+	node_goal = cell_currentNodeMap[mGl_playerPos.xloc][mGl_playerPos.yloc];
 	// Enemy:
 	mGl_enemyPos = pGl_enemyPos;
+	node_start = cell_currentNodeMap[mGl_enemyPos.xloc][mGl_enemyPos.yloc];
 	// Goal:
 	mGl_goalPos = pGl_goalPos;
+
+	cell_nodeList_open[0] = node_start;
 
 	// Populate open list with H values relative to enemy position.
 	SetInitialValues(true);
@@ -363,95 +375,90 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	int openListIndex = 0;
 	int closedListIndex = 0;
 
-
-	CalculateH(pFrom, pTo);
-
-	// Establish directions
-	gridloc gl_up;
-	gl_up.xloc = gl_default.xloc;
-	gl_up.yloc = gl_default.yloc;
-	gridloc gl_right;
-	gl_right.xloc = gl_default.xloc;
-	gl_right.yloc = gl_default.yloc;
-	gridloc gl_down = gl_default;
-	gl_down.xloc = gl_default.xloc;
-	gl_down.yloc = gl_default.yloc;
-	gridloc gl_left = gl_default;
-	gl_left.xloc = gl_default.xloc;
-	gl_left.yloc = gl_default.yloc;
-
-	// Populate directions with actual locations
-	if (pFrom.yloc > 0)	{ gridloc gl_up(pFrom.xloc, (pFrom.yloc - 1)); }
-	if (pFrom.xloc < 25) { gridloc gl_right(pFrom.xloc + 1, pFrom.yloc); }
-	if (pFrom.yloc < 25) { gridloc gl_down(pFrom.xloc, pFrom.yloc + 1); }
-	if (pFrom.xloc > 0) { gridloc gl_left(pFrom.xloc - 1, pFrom.yloc); }
-
-	// Check the state of the cell above
-	if (gl_up.xloc != 0 && gl_up.yloc != 0)
+	while (NULL == cell_nodeList_open)
 	{
-		switch (cell_nodeList_open[(gl_up.yloc * 25) + gl_up.xloc].state)
+
+		CalculateH(pFrom, pTo);
+
+		// Establish directions
+		gridloc gl_up = gl_default;
+		gridloc gl_right = gl_default;
+		gridloc gl_down = gl_default;
+		gridloc gl_left = gl_default;
+
+		// Populate directions with actual locations
+		if (pFrom.yloc > 0)	{ gridloc gl_up(pFrom.xloc, (pFrom.yloc - 1)); }
+		if (pFrom.xloc < 25) { gridloc gl_right(pFrom.xloc + 1, pFrom.yloc); }
+		if (pFrom.yloc < 25) { gridloc gl_down(pFrom.xloc, pFrom.yloc + 1); }
+		if (pFrom.xloc > 0) { gridloc gl_left(pFrom.xloc - 1, pFrom.yloc); }
+
+		// Check the state of the cell above
+		if (gl_up.xloc != 0 && gl_up.yloc != 0)
 		{
-		case 0:	// Is the node open?
-		{
-					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODEOPEN);
-		} break;
-		case 1:	// Is the node closed?
-		{
-					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODECLOSED);
-		} break;
+			switch (cell_nodeList_open[(gl_up.yloc * 25) + gl_up.xloc].state)
+			{
+			case 0:	// Is the node open?
+			{
+						NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODEOPEN);
+			} break;
+			case 1:	// Is the node closed?
+			{
+						NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODECLOSED);
+			} break;
+			}
 		}
-	}
 
-	// Check the state of the cell to the right
-	if (gl_right.xloc != 0 && gl_right.yloc != 0)
-	{
-		switch (cell_nodeList_open[(gl_right.yloc * 25) + gl_right.xloc].state)
+		// Check the state of the cell to the right
+		if (gl_right.xloc != 0 && gl_right.yloc != 0)
 		{
-		case 0:	// Is the node open?
-		{
-					NodesOpenToClosed(closedListIndex, gl_right, pFrom, NODEOPEN);
-		} break;
-		case 1:	// Is the node closed?
-		{
-					NodesOpenToClosed(closedListIndex, gl_right, pFrom, NODECLOSED);
-		} break;
+			switch (cell_nodeList_open[(gl_right.yloc * 25) + gl_right.xloc].state)
+			{
+			case 0:	// Is the node open?
+			{
+						NodesOpenToClosed(closedListIndex, gl_right, pFrom, NODEOPEN);
+			} break;
+			case 1:	// Is the node closed?
+			{
+						NodesOpenToClosed(closedListIndex, gl_right, pFrom, NODECLOSED);
+			} break;
+			}
 		}
-	}
 
-	// Check the state of the cell below
-	if (gl_down.xloc != 0 && gl_down.yloc != 0)
-	{
-		switch (cell_nodeList_open[(gl_down.yloc * 25) + gl_down.xloc].state)
+		// Check the state of the cell below
+		if (gl_down.xloc != 0 && gl_down.yloc != 0)
 		{
-		case 0:	// Is the node open?
-		{
-					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODEOPEN);
-		} break;
-		case 1:	// Is the node closed?
-		{
-					NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODECLOSED);
-		} break;
+			switch (cell_nodeList_open[(gl_down.yloc * 25) + gl_down.xloc].state)
+			{
+			case 0:	// Is the node open?
+			{
+						NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODEOPEN);
+			} break;
+			case 1:	// Is the node closed?
+			{
+						NodesOpenToClosed(closedListIndex, gl_up, pFrom, NODECLOSED);
+			} break;
+			}
 		}
-	}
 
-	// Check the state of the cell below
-	if (gl_left.xloc != 0 && gl_left.yloc != 0)
-	{
-		switch (cell_nodeList_open[(gl_left.yloc * 25) + gl_left.xloc].state)
+		// Check the state of the cell below
+		if (gl_left.xloc != 0 && gl_left.yloc != 0)
 		{
-		case 0:	// Is the node passable?
-		{
-					NodesOpenToClosed(closedListIndex, gl_left, pFrom, NODEOPEN);
-		} break;
-		case 1:	// Is the node blocked?
-		{
-					NodesOpenToClosed(closedListIndex, gl_left, pFrom, NODECLOSED);
-		} break;
+			switch (cell_nodeList_open[(gl_left.yloc * 25) + gl_left.xloc].state)
+			{
+			case 0:	// Is the node passable?
+			{
+						NodesOpenToClosed(closedListIndex, gl_left, pFrom, NODEOPEN);
+			} break;
+			case 1:	// Is the node blocked?
+			{
+						NodesOpenToClosed(closedListIndex, gl_left, pFrom, NODECLOSED);
+			} break;
+			}
 		}
+
+		// SortNodesByFValue();
+
 	}
-
-	// SortNodesByFValue();
-
 
 	cout << "Error returned from cPathfinder::NextMove();" << endl;
 	return gl_default;
@@ -481,7 +488,7 @@ void cPathfinder::NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, 
 void cPathfinder::SortNodesByFValue(int index)
 {
 	cCell tempcell;
-	if (index == 625)							// Does this need to be 624?
+	if (index == 624)							
 	{
 		if (swapflag == false)
 		{

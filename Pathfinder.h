@@ -2,6 +2,8 @@
 #include "Cell.h"
 #include "gridloc.h"
 #include "Maze.h"
+#include <algorithm>
+#include <vector>
 
 class cPathfinder
 {
@@ -52,10 +54,17 @@ private:
 	// ==============================
 
 	const enum gVal { NODEOPEN = 10, NODECLOSED = 500 };
+	cCell node_start;				// The enemy's current position
+	cCell node_goal;				// The player's current position
+	cCell node_current;				// The node currently being evaluated
+
 
 	// Open and closed lists for pathfinding algorithm
-	cCell cell_nodeList_open[625];					// Open list of nodes
-	cCell cell_nodeList_closed[625];				// Closed list of nodes
+	// cCell cell_nodeList_open[625];					// Open list of nodes
+	// cCell cell_nodeList_closed[625];				// Closed list of nodes
+
+	vector<cCell> cell_nodeList_open;
+	vector<cCell> cell_nodeList_closed;
 	
 	bool swapflag;
 	
