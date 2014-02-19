@@ -22,6 +22,8 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 				cell_currentNodeMap[xindex][yindex].state = 0;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
 				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 
@@ -29,6 +31,8 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 				cell_currentNodeMap[xindex][yindex].state = 1;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
 				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 
@@ -36,6 +40,8 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 				cell_currentNodeMap[xindex][yindex].state = 0;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
 				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 
@@ -43,6 +49,8 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 				cell_currentNodeMap[xindex][yindex].state = 1;
 				cell_currentNodeMap[xindex][yindex].index = cellindex;
 				cell_nodeList_open[cellindex] = cell_currentNodeMap[xindex][yindex];
+				cell_nodeList_open[cellindex].mGl_location.xloc = xindex;
+				cell_nodeList_open[cellindex].mGl_location.yloc = yindex;
 				cellindex++;
 				break;
 			}
@@ -58,19 +66,15 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 	}
 
 	// Assign positions
-
 	// Player:
-	mGl_playerPos.xloc = pGl_playerPos.xloc;
-	mGl_playerPos.yloc = pGl_playerPos.yloc;
+	mGl_playerPos = pGl_playerPos;
 	// Enemy:
-	mGl_enemyPos.xloc = pGl_enemyPos.xloc;
-	mGl_enemyPos.yloc = pGl_enemyPos.yloc;
+	mGl_enemyPos = pGl_enemyPos;
 	// Goal:
-	mGl_goalPos.xloc = pGl_goalPos.xloc;
-	mGl_goalPos.yloc = pGl_goalPos.yloc;
+	mGl_goalPos = pGl_goalPos;
 
-	CalculateH();
-
+	// Populate open list with H values relative to enemy position.
+	SetInitialValues(true);
 	return;
 
 }
@@ -183,7 +187,7 @@ void cPathfinder::Print(bool b_printLabel) {
 	return;
 }
 
-// Calculate the current H-Value
+// Calculate the current H-Value for entire map, relative to enemy position
 void cPathfinder::CalculateH(bool print)
 {
 	for (int y = 0; y < 25; y++)
@@ -195,7 +199,7 @@ void cPathfinder::CalculateH(bool print)
 			int ydiff = currentLoc.yloc - mGl_enemyPos.yloc;
 			if (xdiff < 0) { xdiff *= -1; }
 			if (ydiff < 0) { ydiff *= -1; }
-			cell_nodeList_open[(x * 25) + y].hValue = xdiff + ydiff;
+			cell_nodeList_open[(y * 25) + x].hValue = xdiff + ydiff;
 		}
 	}
 
@@ -207,6 +211,40 @@ void cPathfinder::CalculateH(bool print)
 		{
 			cout
 				<< "Hval: "
+				<< cell_nodeList_open[cellindex].hValue
+				<< ", "
+				<< cell_nodeList_open[cellindex].index
+				<< ", Fval: "
+				<< cell_nodeList_open[cellindex].fValue
+				<< ", State: "
+				<< cell_nodeList_open[cellindex].state
+				<< endl;
+		}
+	}
+}
+
+// Calculate the current H-Value for entire map, relative to enemy position
+void cPathfinder::CalculateG(bool print)
+{
+	for (int y = 0; y < 25; y++)
+	{
+		for (int x = 0; x < 25; x++)
+		{
+			cell_nodeList_open[(y * 25) + x].gValue = 0;
+			cell_nodeList_closed[(y * 25) + x].gValue = 0;
+		}
+	}
+
+	if (print == 1)
+	{
+		// Enable for debugging
+		cout << "Open nodelist: " << endl;
+		for (int cellindex = 0; cellindex < 625; cellindex++)
+		{
+			cout
+				<< "Gval: "
+				<< cell_nodeList_open[cellindex].gValue
+				<< ", Hval: "
 				<< cell_nodeList_open[cellindex].hValue
 				<< ", "
 				<< cell_nodeList_open[cellindex].index
@@ -321,22 +359,24 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	// (0, 0) cannot be a valid gridloc value, so it is a failstate.
 	gridloc gl_default(0, 0);
 
+	// Set initial values for indices
+	int openListIndex = 0;
+	int closedListIndex = 0;
+
+
 	CalculateH(pFrom, pTo);
 
-	const enum gVal { NODEOPEN = 10, NODECLOSED = 500 };
-
+	// Establish directions
 	gridloc gl_up = gl_default;
 	gridloc gl_right = gl_default;
 	gridloc gl_down = gl_default;
 	gridloc gl_left = gl_default;
 
+	// Populate directions with actual locations
 	if (pFrom.yloc > 0)	{ gridloc gl_up(pFrom.xloc, (pFrom.yloc - 1)); }
 	if (pFrom.xloc < 25) { gridloc gl_right(pFrom.xloc + 1, pFrom.yloc); }
 	if (pFrom.yloc < 25) { gridloc gl_down(pFrom.xloc, pFrom.yloc + 1); }
 	if (pFrom.xloc > 0) { gridloc gl_left(pFrom.xloc - 1, pFrom.yloc); }
-
-	int openListIndex = 0;
-	int closedListIndex = 0;
 
 	// Check the state of the cell above
 	if (gl_up.xloc != 0 && gl_up.yloc != 0)
@@ -402,7 +442,7 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 		}
 	}
 
-
+	SortNodesByFValue();
 
 
 	cout << "Error returned from cPathfinder::NextMove();" << endl;
@@ -414,11 +454,18 @@ void cPathfinder::NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, 
 {
 	cell_nodeList_closed[pClosedListIndex] = cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc];
 	cell_nodeList_closed[pClosedListIndex].gValue = pFlag;
+
 	if (cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].gValue > 0)
 	{
 		cell_nodeList_closed[pClosedListIndex].gValue += cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].gValue;
 	}
+
 	cell_nodeList_closed[pClosedListIndex].parent = &cell_nodeList_closed[(pPosCheckFrom.yloc * 25) + pPosCheckFrom.xloc];
+	cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].setCell(9999, 9999);
+	cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].gValue = 9999;
+	cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].hValue = 9999;
+	cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].mGl_location.xloc = 0;
+	cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc].mGl_location.yloc = 0;
 	pClosedListIndex++;
 	return;
 }
@@ -426,13 +473,12 @@ void cPathfinder::NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, 
 void cPathfinder::SortNodesByFValue(int index)
 {
 	cCell tempcell;
-	if (index == 625)							// Does this need to be 624
+	if (index == 625)							// Does this need to be 624?
 	{
 		if (swapflag == false)
 		{
 			return;
 		}
-
 		index = 0;
 		swapflag = false;
 	}
@@ -444,5 +490,46 @@ void cPathfinder::SortNodesByFValue(int index)
 		cell_nodeList_open[index + 1] = tempcell;
 		swapflag = true;
 	}
+
 	SortNodesByFValue(index + 1);
+}
+
+void cPathfinder::CalculateF(int pIndex)
+{
+	cell_nodeList_closed[pIndex].fValue = cell_nodeList_closed[pIndex].gValue + cell_nodeList_closed[pIndex].hValue;
+	cell_nodeList_open[pIndex].fValue = cell_nodeList_open[pIndex].gValue = cell_nodeList_open[pIndex].hValue;
+	if (pIndex == 625)
+	{
+		return;
+	}
+	CalculateF(pIndex + 1);
+}
+
+void cPathfinder::SetInitialValues(bool print)
+{
+	CalculateH();
+	CalculateG();
+	CalculateF();
+
+	if (print)
+	{
+		cout << "Open nodelist: " << endl;
+		for (int cellindex = 0; cellindex < 625; cellindex++)
+		{
+			cout
+				<< "Gval: "
+				<< cell_nodeList_open[cellindex].gValue
+				<< ", Hval: "
+				<< cell_nodeList_open[cellindex].hValue
+				<< ", "
+				<< cell_nodeList_open[cellindex].index
+				<< ", Fval: "
+				<< cell_nodeList_open[cellindex].fValue
+				<< ", State: "
+				<< cell_nodeList_open[cellindex].state
+				<< endl;
+		}
+	}
+
+	return;
 }

@@ -21,8 +21,9 @@ public:
     int state;						// Contents - passable (0) or solid (1)
 	int gValue;						// Movement cost to move from the starting point to this one. 
 	int hValue;						// Heuristic cost - distance
-	int fValue = gValue + hValue;	// Function or variable?
+	int fValue;						// Sum of movement cost + heuristic cost
 	cCell *parent;					// Pointer to the parent cell
+	gridloc mGl_location;			// Location on the map.
     
 	// Assign the instance of the cell an index and a state.
 	void setCell(int pCellIndex, int pCellState);
