@@ -83,10 +83,10 @@ void cPathfinder::create(cMaze m_MazeToMap, gridloc pGl_playerPos, gridloc pGl_e
 	// Goal:
 	mGl_goalPos = pGl_goalPos;
 
-	cell_nodeList_open[0] = node_start;
+	cell_nodeList_open.push_back(node_start);
 
 	// Populate open list with H values relative to enemy position.
-	SetInitialValues(true);
+	// SetInitialValues(true);
 	return;
 
 }
@@ -200,7 +200,7 @@ void cPathfinder::Print(bool b_printLabel) {
 }
 
 // Calculate the current H-Value for entire map, relative to enemy position
-void cPathfinder::CalculateH(bool print)
+/*void cPathfinder::CalculateH(bool print)
 {
 	for (int y = 0; y < 25; y++)
 	{
@@ -234,7 +234,9 @@ void cPathfinder::CalculateH(bool print)
 		}
 	}
 }
+*/
 
+/*
 // Calculate the current H-Value for entire map, relative to enemy position
 void cPathfinder::CalculateG(bool print)
 {
@@ -268,7 +270,9 @@ void cPathfinder::CalculateG(bool print)
 		}
 	}
 }
+*/
 
+/*
 // Overload for calculating the current H value, takes argument of gridloc positions.
 void cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, gridloc pGl_goalPos, bool print)
 {
@@ -317,7 +321,9 @@ void cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, gridlo
 		}
 	}
 }
+*/
 
+/*
 // Overload for calculating the current H value, takes argument of gridloc positions.
 void cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, bool print)
 {
@@ -374,9 +380,6 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	// Set initial values for indices
 	int openListIndex = 0;
 	int closedListIndex = 0;
-
-	while (NULL == cell_nodeList_open)
-	{
 
 		CalculateH(pFrom, pTo);
 
@@ -458,13 +461,12 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 
 		// SortNodesByFValue();
 
-	}
-
 	cout << "Error returned from cPathfinder::NextMove();" << endl;
 	return gl_default;
 }
+*/
 
-
+/*
 void cPathfinder::NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, gridloc pPosCheckFrom, int pFlag)
 {
 	cell_nodeList_closed[pClosedListIndex] = cell_nodeList_open[(pPosToCheck.yloc * 25) + pPosToCheck.xloc];
@@ -508,7 +510,9 @@ void cPathfinder::SortNodesByFValue(int index)
 
 	SortNodesByFValue(index + 1);
 }
+*/
 
+/*
 void cPathfinder::CalculateF(int pIndex)
 {
 	cell_nodeList_closed[pIndex].fValue = cell_nodeList_closed[pIndex].gValue + cell_nodeList_closed[pIndex].hValue;
@@ -548,3 +552,4 @@ void cPathfinder::SetInitialValues(bool print)
 
 	return;
 }
+*/

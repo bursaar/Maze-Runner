@@ -241,7 +241,7 @@ int main(int argn, char * args[])
 				gl_enemy.xloc = fl_enemyX / rect_player.w;
 				gl_enemy.yloc = fl_enemyY / rect_player.h;
 
-				gridloc gl_nextMove = PathOne.NextMove(gl_enemy, gl_player);
+				// gridloc gl_nextMove = PathOne.NextMove(gl_enemy, gl_player);
 
 				// Moving the enemy
 				if (int_enemyMovement != NONE)

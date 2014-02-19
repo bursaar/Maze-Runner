@@ -43,10 +43,10 @@ public:
 	//==========================================================================================================
 	void Print(bool b_printLabel = 0);
 
-	void CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, bool print = 0);	// Overloaded version that takes arguments of current/proposed locations.
-	void CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, gridloc pGl_goalPos, bool print = 0);	// Overloaded version that takes arguments of current/proposed locations, incl. goal
-	gridloc NextMove(gridloc pFrom, gridloc pTo);
-	void CalculateF(int pIndex = 0);
+	// void CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, bool print = 0);	// Overloaded version that takes arguments of current/proposed locations.
+	// void CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, gridloc pGl_goalPos, bool print = 0);	// Overloaded version that takes arguments of current/proposed locations, incl. goal
+	// gridloc NextMove(gridloc pFrom, gridloc pTo);
+	// void CalculateF(int pIndex = 0);
 	
 private: 
 	// ==============================
@@ -71,11 +71,11 @@ private:
 	// ===============================
 	// Calculate current H value
 	// ===============================
-	void CalculateH(bool print = 0);
-	void CalculateG(bool print = 0);
-	void NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, gridloc pPosCheckFrom, int pFlag);
-	void SetInitialValues(bool print = 0);
+	// void CalculateH(bool print = 0);
+	// void CalculateG(bool print = 0);
+	// void NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, gridloc pPosCheckFrom, int pFlag);
+	// void SetInitialValues(bool print = 0);
 
 	// Bubble sort function - taken from the example in T2G Developer S1PB, Lesson 7, Page 107
-	void SortNodesByFValue(int index = 0);
+	// void SortNodesByFValue(int index = 0);
 };
