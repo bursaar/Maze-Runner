@@ -422,3 +422,27 @@ void cPathfinder::NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, 
 	pClosedListIndex++;
 	return;
 }
+
+void cPathfinder::SortNodesByFValue(int index)
+{
+	cCell tempcell;
+	if (index == 625)							// Does this need to be 624
+	{
+		if (swapflag == false)
+		{
+			return;
+		}
+
+		index = 0;
+		swapflag = false;
+	}
+
+	if (cell_nodeList_open[index].fValue > cell_nodeList_open[index + 1].fValue)
+	{
+		tempcell = cell_nodeList_open[index];
+		cell_nodeList_open[index] = cell_nodeList_open[index + 1];
+		cell_nodeList_open[index + 1] = tempcell;
+		swapflag = true;
+	}
+	SortNodesByFValue(index + 1);
+}

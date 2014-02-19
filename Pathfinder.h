@@ -54,9 +54,12 @@ private:
 	cCell cell_nodeList_open[625];					// Open list of nodes
 	cCell cell_nodeList_closed[625];				// Closed list of nodes
 	
+	bool swapflag;
+	
 	// ===============================
 	// Calculate current H value
 	// ===============================
 	void CalculateH(bool print = 0);
 	void NodesOpenToClosed(int &pClosedListIndex, gridloc pPosToCheck, gridloc pPosCheckFrom, int pFlag);
+	void SortNodesByFValue(int index = 0);
 };
