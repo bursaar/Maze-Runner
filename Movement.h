@@ -8,6 +8,7 @@ enum MOVEMENT { NONE, UP, RIGHT, DOWN, LEFT };
 int int_movement = NONE;
 int int_enemyMovement = NONE;
 bool bl_freeToMove = true;
+bool bl_enemyFreeToMove = true;
 
 // Function to help clip to array co-ordinates
 bool TestForCollision(int pX, int pY, cPathfinder pNodes, SDL_Rect pRect, int pDirection)

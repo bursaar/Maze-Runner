@@ -61,8 +61,6 @@ int main(int argn, char * args[])
 	float fl_lastFrameTime = 0.0f;
 	fl_lastFrameTime = SDL_GetTicks();
 
-	//	float speed = 50.0f;			// TODO - Remove line
-
 
 	// =========================== //
 	//			Main loop	       //
@@ -174,122 +172,116 @@ int main(int argn, char * args[])
 				}
 			}
 
+			// Flag testing whether a turn has been taken.
+			// Reset on every update to false to skip pathfinding.
+			bool bl_turnFlag = false;
+
 			// Moving the player
-			
 			switch (int_movement)
 			{
 			case UP:
 				if (fl_playerY > 0
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, UP)
-					)
+					&& bl_freeToMove)
 				{
 					fl_playerY -= rect_player.h;						// Up
 					int_movement = NONE;
 					bl_freeToMove = false;
-					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
 					int_enemyMovement = UP;
+					bl_turnFlag = true;
+					
 				}
 				break;
 
 			case RIGHT:
 				if (fl_playerX < (rect_player.w * 25)
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, RIGHT)
-					)
+					&& bl_freeToMove)
 				{
 					fl_playerX += rect_player.w;							// Right
 					int_movement = NONE;
 					bl_freeToMove = false;
-					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
 					int_enemyMovement = RIGHT;
+					bl_turnFlag = true;
 				}
 				break;
 
 			case DOWN:
 				if (fl_playerY < (rect_player.h * 25)
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, DOWN)
-					)
+					&& bl_freeToMove)
 				{
 					fl_playerY += rect_player.h;						// Down
 					int_movement = NONE;
 					bl_freeToMove = false;
-					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
 					int_enemyMovement = DOWN;
+					bl_turnFlag = true;
 				}
 				break;
 
 			case LEFT:
 				if (fl_playerX > 0
 					&& TestForCollision((int)fl_playerX, (int)fl_playerY, PathOne, rect_player, LEFT)
-					)
+					&& bl_freeToMove)
 				{
 					fl_playerX -= rect_player.w;						// Left
 					int_movement = NONE;
 					bl_freeToMove = false;
-					gridloc gl_playerCurrentPos((fl_playerX / rect_player.w), (fl_playerY / rect_player.h));
-					PathOne.NextMove(gl_enemy, gl_playerCurrentPos);
 					int_enemyMovement = LEFT;
+					bl_turnFlag = true;
 				}
 				break;
 			}
-			
 
-			// Moving the enemy
-
-			switch (int_enemyMovement)
+			// Only run the below code segment if a turn has been made.
+			if (bl_turnFlag == true)
 			{
-			case UP:
-				if (fl_enemyY > 0
-					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, UP)
-					)
-				{
-					fl_enemyY -= rect_enemy.h;						// Up
-					int_enemyMovement = NONE;
-					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
-					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
-				}
-				break;
+				gl_player.xloc = fl_playerX / rect_player.w;
+				gl_player.yloc = fl_playerY / rect_player.h;
+				gl_enemy.xloc = fl_enemyX / rect_player.w;
+				gl_enemy.yloc = fl_enemyY / rect_player.h;
 
-			case RIGHT:
-				if (fl_enemyX < (rect_enemy.w * 25)
-					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, RIGHT)
-					)
-				{
-					fl_enemyX += rect_enemy.w;							// Right
-					int_enemyMovement = NONE;
-					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
-					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
-				}
-				break;
+				gridloc gl_nextMove = PathOne.NextMove(gl_enemy, gl_player);
 
-			case DOWN:
-				if (fl_enemyY < (rect_enemy.h * 25)
-					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, DOWN)
-					)
+				// Moving the enemy
+				if (int_enemyMovement != NONE)
 				{
-					fl_enemyY += rect_enemy.h;						// Down
-					int_enemyMovement = NONE;
-					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
-					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
-				}
-				break;
+					switch (int_enemyMovement)
+					{
+					case UP:
+						if (fl_enemyY > 0)
+						{
+							fl_enemyY -= rect_enemy.h;
+							int_enemyMovement = NONE;
+						}
+						break;
+					case RIGHT:
+						if (fl_enemyX < 24 * rect_enemy.w)
+						{
+							fl_enemyX += rect_player.w;
+							int_enemyMovement = NONE;
+						}
+						break;
+					case DOWN:
+						if (fl_enemyY < 24 * rect_enemy.h)
+						{
+							fl_enemyY += rect_enemy.h;
+							int_enemyMovement = NONE;
+						}
+						break;
+					case LEFT:
+						if (fl_enemyX > 0)
+						{
+							fl_enemyX -= rect_enemy.w;
+							int_enemyMovement = NONE;
+						}
+						break;
 
-			case LEFT:
-				if (fl_enemyX > 0
-					&& TestForCollision((int)fl_enemyX, (int)fl_enemyY, PathOne, rect_enemy, LEFT)
-					)
-				{
-					fl_enemyX -= rect_enemy.w;						// Left
-					int_enemyMovement = NONE;
-					gridloc gl_enemyCurrentPos((fl_enemyX / rect_enemy.w), (fl_enemyY / rect_enemy.h));
-					PathOne.NextMove(gl_player, gl_enemyCurrentPos);
+					}
 				}
-				break;
 			}
 
-
+			// Release movement lock on player.
 			if (
 				!KeyboardState[SDL_SCANCODE_UP]
 				&& !KeyboardState[SDL_SCANCODE_W]
@@ -312,20 +304,20 @@ int main(int argn, char * args[])
 				gamestate = LOSE;
 			}
 
+			// Check if player and goal are colliding.
 			if (fl_playerX == fl_goalX
 				&& fl_playerY == fl_goalY)
 			{
 				gamestate = WIN;
 			}
 
-
+			// Check if the escape key has been hit.
 			if (KeyboardState[SDL_SCANCODE_ESCAPE])
 			{
 				gamestate = QUIT;
 			}
 
 		fl_lastFrameTime = fl_newFrameTime;
-
 
 		// Check for changes in the state of the game.
 		switch (gamestate)
@@ -347,7 +339,7 @@ int main(int argn, char * args[])
 			break;
 		case QUIT:
 		{
-					 quit = true;
+						quit = true;
 		}
 		}
 
