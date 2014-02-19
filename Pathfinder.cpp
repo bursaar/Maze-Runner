@@ -367,10 +367,18 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 	CalculateH(pFrom, pTo);
 
 	// Establish directions
-	gridloc gl_up = gl_default;
-	gridloc gl_right = gl_default;
+	gridloc gl_up;
+	gl_up.xloc = gl_default.xloc;
+	gl_up.yloc = gl_default.yloc;
+	gridloc gl_right;
+	gl_right.xloc = gl_default.xloc;
+	gl_right.yloc = gl_default.yloc;
 	gridloc gl_down = gl_default;
+	gl_down.xloc = gl_default.xloc;
+	gl_down.yloc = gl_default.yloc;
 	gridloc gl_left = gl_default;
+	gl_left.xloc = gl_default.xloc;
+	gl_left.yloc = gl_default.yloc;
 
 	// Populate directions with actual locations
 	if (pFrom.yloc > 0)	{ gridloc gl_up(pFrom.xloc, (pFrom.yloc - 1)); }
@@ -442,7 +450,7 @@ gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 		}
 	}
 
-	SortNodesByFValue();
+	// SortNodesByFValue();
 
 
 	cout << "Error returned from cPathfinder::NextMove();" << endl;
