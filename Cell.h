@@ -22,6 +22,7 @@ public:
 	int gValue;						// Movement cost to move from the starting point to this one. 
 	int hValue;						// Heuristic cost - distance
 	int fValue;						// Sum of movement cost + heuristic cost
+	bool checked = false;			// Has it been checked by the pathfinder?
 	cCell *parent;					// Pointer to the parent cell
 	gridloc mGl_location;			// Location on the map.
     

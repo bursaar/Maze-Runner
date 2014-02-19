@@ -323,13 +323,12 @@ void cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, gridlo
 }
 */
 
-/*
+
 // Overload for calculating the current H value, takes argument of gridloc positions.
-void cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, bool print)
+int cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos)
 {
 
 	// Assign positions
-
 	// Player:
 	mGl_playerPos.xloc = pGl_playerPos.xloc;
 	mGl_playerPos.yloc = pGl_playerPos.yloc;
@@ -337,40 +336,16 @@ void cPathfinder::CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, bool p
 	mGl_enemyPos.xloc = pGl_enemyPos.xloc;
 	mGl_enemyPos.yloc = pGl_enemyPos.yloc;
 
-	for (int y = 0; y < 25; y++)
-	{
-		for (int x = 0; x < 25; x++)
-		{
-			gridloc currentLoc(x, y);
-			int xdiff = currentLoc.xloc - mGl_enemyPos.xloc;
-			int ydiff = currentLoc.yloc - mGl_enemyPos.yloc;
-			if (xdiff < 0) { xdiff *= -1; }
-			if (ydiff < 0) { ydiff *= -1; }
-			cell_nodeList_open[(x * 25) + y].hValue = xdiff + ydiff;
-		}
-	}
+	int xdiff = mGl_playerPos.xloc - mGl_enemyPos.xloc;
+	int ydiff = mGl_playerPos.yloc - mGl_enemyPos.yloc;
+	if (xdiff < 0) { xdiff *= -1; }
+	if (ydiff < 0) { ydiff *= -1; }
 
-	if (print == 1)
-	{
-		// Enable for debugging
-		cout << "Open nodelist: " << endl;
-		for (int cellindex = 0; cellindex < 625; cellindex++)
-		{
-			cout
-				<< "Hval: "
-				<< cell_nodeList_open[cellindex].hValue
-				<< ", "
-				<< cell_nodeList_open[cellindex].index
-				<< ", Fval: "
-				<< cell_nodeList_open[cellindex].fValue
-				<< ", State: "
-				<< cell_nodeList_open[cellindex].state
-				<< endl;
-		}
-	}
+
+	return xdiff + ydiff;
 }
 
-
+/*
 gridloc cPathfinder::NextMove(gridloc pFrom, gridloc pTo)
 {
 	// Default grid reference for return of member function,
@@ -553,3 +528,152 @@ void cPathfinder::SetInitialValues(bool print)
 	return;
 }
 */
+
+gridloc cPathfinder::NextMove()
+{
+	gridloc gl_default(0, 0);
+
+	while (!cell_nodeList_open.empty())
+	{
+		node_current = cell_nodeList_open[0];									// Make node_current the cell at the top of the vector
+		if (node_current.mGl_location.xloc == node_goal.mGl_location.xloc			// Check to see if we've reached our goal yet
+			&& node_current.mGl_location.yloc == node_goal.mGl_location.yloc)
+		{
+			break;
+		}
+		// Check above
+		if (node_current.mGl_location.yloc > 0)
+		{
+			if (!cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1].checked)
+			{
+				cell_nodeList_open.push_back(cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1]);
+				cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1].checked = true;
+				// Set values
+				switch (cell_nodeList_open.back().state)
+				{
+				case 0:
+					cell_nodeList_open.back().gValue = NODEOPEN;
+					break;
+				case 1:
+					cell_nodeList_open.back().gValue = NODECLOSED;
+					break;
+				}
+				cell_nodeList_open.back().parent = &node_current;
+				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
+				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+			}
+		}
+		// Check right
+		if (node_current.mGl_location.xloc < 25)
+		{
+			if (!cell_currentNodeMap[node_current.mGl_location.xloc + 1][node_current.mGl_location.yloc].checked)
+			{
+				cell_nodeList_open.push_back(cell_currentNodeMap[node_current.mGl_location.xloc + 1][node_current.mGl_location.yloc]);
+				cell_currentNodeMap[node_current.mGl_location.xloc + 1][node_current.mGl_location.yloc].checked = true;
+				// Set values
+				switch (cell_nodeList_open.back().state)
+				{
+				case 0:
+					cell_nodeList_open.back().gValue = NODEOPEN;
+					break;
+				case 1:
+					cell_nodeList_open.back().gValue = NODECLOSED;
+					break;
+				}
+				cell_nodeList_open.back().parent = &node_current;
+				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
+				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+			}
+		}
+		// Check below
+		if (node_current.mGl_location.yloc < 25)
+		{
+			if (!cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc + 1].checked)
+			{
+				cell_nodeList_open.push_back(cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc + 1]);
+				cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc + 1].checked = true;
+				// Set values
+				switch (cell_nodeList_open.back().state)
+				{
+				case 0:
+					cell_nodeList_open.back().gValue = NODEOPEN;
+					break;
+				case 1:
+					cell_nodeList_open.back().gValue = NODECLOSED;
+					break;
+				}
+				cell_nodeList_open.back().parent = &node_current;
+				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
+				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+			}
+		}
+		// Check left
+		if (node_current.mGl_location.xloc > 0)
+		{
+			if (!cell_currentNodeMap[node_current.mGl_location.xloc - 1][node_current.mGl_location.yloc].checked)
+			{
+				cell_nodeList_open.push_back(cell_currentNodeMap[node_current.mGl_location.xloc - 1][node_current.mGl_location.yloc]);
+				cell_currentNodeMap[node_current.mGl_location.xloc - 1][node_current.mGl_location.yloc].checked = true;
+				// Set values
+				switch (cell_nodeList_open.back().state)
+				{
+				case 0:
+					cell_nodeList_open.back().gValue = NODEOPEN;
+					break;
+				case 1:
+					cell_nodeList_open.back().gValue = NODECLOSED;
+					break;
+				}
+				cell_nodeList_open.back().parent = &node_current;
+				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
+				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+			}
+		}
+
+		// Sort list
+
+
+		cell_nodeList_closed.push_back(node_current);					// Add current node to closed list
+		cell_nodeList_open.erase(cell_nodeList_open.begin());			// Remove current node from closed list
+
+		return gl_default;												// Default value
+	}
+
+	// Reset the original field of cells
+	for (int y = 0; y < 25; y++)
+	{
+		for (int x = 0; x < 25; x++)
+		{
+			cell_currentNodeMap[x][y].checked = false;
+		}
+	}
+}
+
+void cPathfinder::SortOpenList(int index)
+{
+	cCell tempcell;
+
+	if (index == cell_nodeList_open.size())
+	{
+		if (swapflag == false)
+		{
+			return;
+		}
+
+		index = 0;
+		swapflag = false;
+	}
+
+	if (cell_nodeList_open[index].fValue > cell_nodeList_open[index + 1].fValue)
+	{
+		tempcell = cell_nodeList_open[index];
+		
+		cell_nodeList_open[index] = cell_nodeList_open[index + 1];
+
+		cell_nodeList_open[index + 1] = tempcell;
+
+		swapflag = true;
+	}
+
+	SortOpenList(index + 1);
+}

@@ -43,9 +43,8 @@ public:
 	//==========================================================================================================
 	void Print(bool b_printLabel = 0);
 
-	// void CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, bool print = 0);	// Overloaded version that takes arguments of current/proposed locations.
-	// void CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos, gridloc pGl_goalPos, bool print = 0);	// Overloaded version that takes arguments of current/proposed locations, incl. goal
-	// gridloc NextMove(gridloc pFrom, gridloc pTo);
+	int CalculateH(gridloc pGl_playerPos, gridloc pGl_enemyPos);	// Overloaded version that takes arguments of current/proposed locations.
+	gridloc NextMove();
 	// void CalculateF(int pIndex = 0);
 	
 private: 
@@ -78,4 +77,5 @@ private:
 
 	// Bubble sort function - taken from the example in T2G Developer S1PB, Lesson 7, Page 107
 	// void SortNodesByFValue(int index = 0);
+	void SortOpenList(int index = 0);
 };
