@@ -17,6 +17,8 @@ int main(int argn, char * args[])
 	Saver.Save(Serialise::LEVEL);
 	*/
 
+	bool debugging = true;
+
 	Serialise Loader;
 	Loader.mFilename = "LevelOneTest";
 	Loader.Load(Serialise::LEVEL);
@@ -30,7 +32,9 @@ int main(int argn, char * args[])
 	SDL_Surface * spr_player = SDL_LoadBMP("../Sprites/bluesquare.bmp");
 	SDL_Surface * spr_goal = SDL_LoadBMP("../Sprites/goal.bmp");
 	SDL_Surface * spr_enemy = SDL_LoadBMP("../Sprites/enemy.bmp");
-	
+		SDL_Surface * spr_cell_checked = SDL_LoadBMP("../Sprites/redchecked.bmp");
+		SDL_Surface * spr_space_checked = SDL_LoadBMP("../Sprites/whitechecked.bmp");
+
 	// Create window with render surface
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window * window = SDL_CreateWindow("Train2Game Developer Course Portfolio 1 Project 2 - Ben Keenan | CD9000002O", 50, 80, spr_cells->w * 25, spr_cells->h * 25, SDL_WINDOW_SHOWN);
@@ -44,8 +48,8 @@ int main(int argn, char * args[])
 
 	// Assign values for the player.
 	gridloc gl_player = Loader.mGl_player;
-	float fl_playerX = gl_player.xloc * spr_cells->w;
-	float fl_playerY = gl_player.yloc * spr_cells->w;
+	float fl_playerX = gl_player.xloc * spr_player->w;
+	float fl_playerY = gl_player.yloc * spr_player->h;
 
 	// Assign values for the enemy.
 	gridloc gl_enemy = Loader.mGl_enemy;
@@ -81,14 +85,42 @@ int main(int argn, char * args[])
 			{
 				if (MazeOne.mCurrentMaze[x][y].state == cMaze::CLOSED || MazeOne.mCurrentMaze[x][y].state == cMaze::BLOCKED)
 				{
-					SDL_Rect rect_cells;
+					if (!MazeOne.mCurrentMaze[x][y].checked)
+					{
+						SDL_Rect rect_cells;
 
-					rect_cells.x = x * spr_cells->w;
-					rect_cells.y = y * spr_cells->h;
-					rect_cells.w = spr_cells->w;
-					rect_cells.h = spr_cells->h;
+						rect_cells.x = x * spr_cells->w;
+						rect_cells.y = y * spr_cells->h;
+						rect_cells.w = spr_cells->w;
+						rect_cells.h = spr_cells->h;
 
-					SDL_BlitSurface(spr_cells, NULL, renderSurface, &rect_cells);
+						SDL_BlitSurface(spr_cells, NULL, renderSurface, &rect_cells);
+					}
+					else
+					{
+						if (debugging)
+						{
+							SDL_Rect rect_cells_checked;
+
+							rect_cells_checked.x = x * spr_cell_checked->w;
+							rect_cells_checked.y = y * spr_cell_checked->h;
+							rect_cells_checked.w = spr_cell_checked->w;
+							rect_cells_checked.h = spr_cell_checked->h;
+
+							SDL_BlitSurface(spr_cells, NULL, renderSurface, &rect_cells_checked);
+						}
+						else
+						{
+							SDL_Rect rect_cells;
+
+							rect_cells.x = x * spr_cells->w;
+							rect_cells.y = y * spr_cells->h;
+							rect_cells.w = spr_cells->w;
+							rect_cells.h = spr_cells->h;
+
+							SDL_BlitSurface(spr_cells, NULL, renderSurface, &rect_cells);
+						}
+					}
 				}
 			}
 		}

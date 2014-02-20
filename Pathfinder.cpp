@@ -532,10 +532,10 @@ void cPathfinder::SetInitialValues(bool print)
 gridloc cPathfinder::NextMove()
 {
 	gridloc gl_default(0, 0);
-	node_current = cell_nodeList_open[0];																								// Make node_current the cell at the top of the vector
 
 	while (!cell_nodeList_open.empty())
 	{
+		node_current = cell_nodeList_open[0];																							// Make node_current the cell at the top of the vector
 		if (node_current.mGl_location.xloc == node_goal.mGl_location.xloc																// Check to see if we've reached our goal yet
 			&& node_current.mGl_location.yloc == node_goal.mGl_location.yloc)
 		{
