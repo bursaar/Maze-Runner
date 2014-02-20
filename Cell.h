@@ -26,11 +26,14 @@ public:
 	cCell *parent;					// Pointer to the parent cell
 	gridloc mGl_location;			// Location on the map.
     
+	bool operator<(const cCell& other);
+	bool operator>(const cCell& other);
 	// Assign the instance of the cell an index and a state.
 	void setCell(int pCellIndex, int pCellState);
 
-};
+	
 
+};
 
 //===============================================================================================
 // Functions that exist outside of the class but are useful for operations involving the class

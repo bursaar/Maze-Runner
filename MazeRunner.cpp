@@ -61,7 +61,6 @@ int main(int argn, char * args[])
 	float fl_lastFrameTime = 0.0f;
 	fl_lastFrameTime = SDL_GetTicks();
 
-
 	// =========================== //
 	//			Main loop	       //
 	// =========================== //
@@ -187,8 +186,11 @@ int main(int argn, char * args[])
 					fl_playerY -= rect_player.h;						// Up
 					int_movement = NONE;
 					bl_freeToMove = false;
-					int_enemyMovement = UP;
+					// int_enemyMovement = UP;
 					bl_turnFlag = true;
+					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
+					gridloc gl_nextMove = PathOne.NextMove();
+					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
 					
 				}
 				break;
@@ -201,8 +203,11 @@ int main(int argn, char * args[])
 					fl_playerX += rect_player.w;							// Right
 					int_movement = NONE;
 					bl_freeToMove = false;
-					int_enemyMovement = RIGHT;
+					// int_enemyMovement = RIGHT;
 					bl_turnFlag = true;
+					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
+					gridloc gl_nextMove = PathOne.NextMove();
+					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
 				}
 				break;
 
@@ -214,8 +219,11 @@ int main(int argn, char * args[])
 					fl_playerY += rect_player.h;						// Down
 					int_movement = NONE;
 					bl_freeToMove = false;
-					int_enemyMovement = DOWN;
+					// int_enemyMovement = DOWN;
 					bl_turnFlag = true;
+					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
+					gridloc gl_nextMove = PathOne.NextMove();
+					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
 				}
 				break;
 
@@ -227,8 +235,11 @@ int main(int argn, char * args[])
 					fl_playerX -= rect_player.w;						// Left
 					int_movement = NONE;
 					bl_freeToMove = false;
-					int_enemyMovement = LEFT;
+					// int_enemyMovement = LEFT;
 					bl_turnFlag = true;
+					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
+					gridloc gl_nextMove = PathOne.NextMove();
+					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
 				}
 				break;
 			}

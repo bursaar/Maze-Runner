@@ -1,6 +1,5 @@
 #pragma once
 #include "Pathfinder.h"
-#include <SDL.h>
 
 enum MOVEMENT { NONE, UP, RIGHT, DOWN, LEFT };
 

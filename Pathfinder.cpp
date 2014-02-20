@@ -532,35 +532,38 @@ void cPathfinder::SetInitialValues(bool print)
 gridloc cPathfinder::NextMove()
 {
 	gridloc gl_default(0, 0);
+	node_current = cell_nodeList_open[0];																								// Make node_current the cell at the top of the vector
 
 	while (!cell_nodeList_open.empty())
 	{
-		node_current = cell_nodeList_open[0];									// Make node_current the cell at the top of the vector
-		if (node_current.mGl_location.xloc == node_goal.mGl_location.xloc			// Check to see if we've reached our goal yet
+		if (node_current.mGl_location.xloc == node_goal.mGl_location.xloc																// Check to see if we've reached our goal yet
 			&& node_current.mGl_location.yloc == node_goal.mGl_location.yloc)
 		{
-			break;
+			break;																														// If we have, break the loop.
 		}
 		// Check above
-		if (node_current.mGl_location.yloc > 0)
+		bool foundMoves = false;																										// Check that new moves have been found.
+		if (node_current.mGl_location.yloc > 0)																							// If we're not at the very top
 		{
-			if (!cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1].checked)
+			if (!cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1].checked)						// And if the node above hasn't been checked already
 			{
-				cell_nodeList_open.push_back(cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1]);
-				cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1].checked = true;
+				cell_nodeList_open.push_back(cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1]);	// Add the node to the end of the open list
+				cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc - 1].checked = true;					// Mark it off as checked.
 				// Set values
-				switch (cell_nodeList_open.back().state)
+				switch (cell_nodeList_open.back().state)																				// Check the state of the node
 				{
-				case 0:
-					cell_nodeList_open.back().gValue = NODEOPEN;
+				case 0:																													// If it's open
+					cell_nodeList_open.back().gValue = NODEOPEN;																		// Set the g value to the cost of an open node
 					break;
-				case 1:
-					cell_nodeList_open.back().gValue = NODECLOSED;
-					break;
+				case 1:																													// If it's closed
+					cell_nodeList_open.back().gValue = NODECLOSED;																		// Set the g value to the cost of a closed node
+					break;			
 				}
-				cell_nodeList_open.back().parent = &node_current;
-				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
-				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+				cell_nodeList_open.back().parent = &node_current;																		// Set the parent node to the current node
+				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;											// Add the parent node's g-value to this one
+				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);			// Calculate the h-value between this node and the goal node (the player)
+				cell_nodeList_open.back().fValue = cell_nodeList_open.back().hValue + cell_nodeList_open.back().gValue;
+				foundMoves = true;
 			}
 		}
 		// Check right
@@ -583,6 +586,8 @@ gridloc cPathfinder::NextMove()
 				cell_nodeList_open.back().parent = &node_current;
 				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
 				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+				cell_nodeList_open.back().fValue = cell_nodeList_open.back().hValue + cell_nodeList_open.back().gValue;
+				foundMoves = true;
 			}
 		}
 		// Check below
@@ -605,6 +610,8 @@ gridloc cPathfinder::NextMove()
 				cell_nodeList_open.back().parent = &node_current;
 				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
 				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+				cell_nodeList_open.back().fValue = cell_nodeList_open.back().hValue + cell_nodeList_open.back().gValue;
+				foundMoves = true;
 			}
 		}
 		// Check left
@@ -627,16 +634,24 @@ gridloc cPathfinder::NextMove()
 				cell_nodeList_open.back().parent = &node_current;
 				cell_nodeList_open.back().gValue += cell_nodeList_open.back().parent->gValue;
 				cell_nodeList_open.back().hValue = CalculateH(cell_nodeList_open.back().mGl_location, node_goal.mGl_location);
+				cell_nodeList_open.back().fValue = cell_nodeList_open.back().hValue + cell_nodeList_open.back().gValue;
+				foundMoves = true;
+				cout << "checking left" << endl;
 			}
 		}
 
-		// Sort list
-
-
-		cell_nodeList_closed.push_back(node_current);					// Add current node to closed list
-		cell_nodeList_open.erase(cell_nodeList_open.begin());			// Remove current node from closed list
-
-		return gl_default;												// Default value
+		if (foundMoves)
+		{
+			sort(cell_nodeList_open.begin(), cell_nodeList_open.end());		// Sort the open list
+			cell_nodeList_closed.push_back(node_current);					// Add current node to closed list
+			cell_nodeList_open.erase(cell_nodeList_open.begin());			// Remove current node from closed list
+		}
+		else
+		{
+			cell_currentNodeMap[node_current.mGl_location.xloc][node_current.mGl_location.yloc].checked = 1;	// Make it ineligible for consideration
+			cell_nodeList_closed.push_back(node_current);														// Add node to closed list
+			cell_nodeList_open.erase(cell_nodeList_open.begin());
+		}
 	}
 
 	// Reset the original field of cells
@@ -647,6 +662,13 @@ gridloc cPathfinder::NextMove()
 			cell_currentNodeMap[x][y].checked = false;
 		}
 	}
+	
+	sort(cell_nodeList_closed.begin(), cell_nodeList_closed.end());
+	
+	gridloc returnLoc = cell_nodeList_closed[0].mGl_location;
+	cell_nodeList_open.clear();
+	cell_nodeList_closed.clear();
+	return returnLoc;
 }
 
 void cPathfinder::SortOpenList(int index)
@@ -663,17 +685,27 @@ void cPathfinder::SortOpenList(int index)
 		index = 0;
 		swapflag = false;
 	}
+		if (cell_nodeList_open[index].fValue > cell_nodeList_open[index + 1].fValue)
+		{
+			tempcell = cell_nodeList_open[index];
 
-	if (cell_nodeList_open[index].fValue > cell_nodeList_open[index + 1].fValue)
-	{
-		tempcell = cell_nodeList_open[index];
-		
-		cell_nodeList_open[index] = cell_nodeList_open[index + 1];
+			cell_nodeList_open[index] = cell_nodeList_open[index + 1];
 
-		cell_nodeList_open[index + 1] = tempcell;
+			cell_nodeList_open[index + 1] = tempcell;
 
-		swapflag = true;
-	}
-
+			swapflag = true;
+		}
 	SortOpenList(index + 1);
+}
+
+void cPathfinder::UpdateLocs(float pPlayerX, float pPlayerY, float pEnemyX, float pEnemyY, SDL_Rect pPlayerRect, SDL_Rect pEnemyRect)
+{
+	gridloc pPlayer;
+	gridloc pEnemy;
+	pPlayer.xloc = pPlayerX / pPlayerRect.w;
+	pPlayer.yloc = pPlayerY / pPlayerRect.h;
+	pEnemy.xloc = pEnemyX / pEnemyRect.w;
+	pEnemy.yloc = pEnemyY / pEnemyRect.h;
+	mGl_playerPos = pPlayer;
+	mGl_enemyPos = pEnemy;
 }

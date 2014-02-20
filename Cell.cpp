@@ -10,6 +10,32 @@ void cCell::setCell(int pCellIndex, int pCellState)
 	state = pCellState;
 }
 
+
+bool cCell::operator<(const cCell& other)
+{
+	if (fValue < other.fValue)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool cCell::operator>(const cCell& other)
+{
+	if (fValue > other.fValue)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
 void PrintCoOrds(gridloc list[4])
 {
 	int xlist = 0;
