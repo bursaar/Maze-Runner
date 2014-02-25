@@ -4,24 +4,36 @@
 
 int main(int argn, char * args[])
 {
-	/*
-	// Serialisation test/demo //
-	Serialise Saver(DefaultCode);
-	Saver.mFilename = "LevelOneTest";
-	Saver.mGl_player.xloc = 1;
-	Saver.mGl_player.yloc = 0;
-	Saver.mGl_enemy.xloc = 15;
-	Saver.mGl_enemy.yloc = 7;
-	Saver.mGl_goal.xloc = 15;
-	Saver.mGl_goal.yloc = 0;
-	Saver.Save(Serialise::LEVEL);
-	*/
+
+// 	Serialise Loader;
+
+// 	fstream emptyLevel("LevelOneTest.lvl");
+// 	fstream savedLevel("LevelOneSave.lvl");
+
+//	if (!savedLevel.good())
+//	{
+		Serialise Saver(DefaultCode);
+		Saver.mFilename = "LevelOneTest";
+		Saver.mGl_player.xloc = 1;
+		Saver.mGl_player.yloc = 0;
+		Saver.mGl_enemy.xloc = 15;
+		Saver.mGl_enemy.yloc = 7;
+		Saver.mGl_goal.xloc = 15;
+		Saver.mGl_goal.yloc = 0;
+		Saver.Save(Serialise::LEVEL);
+
+		Serialise Loader;
+		Loader.mFilename = "LevelOneTest";
+		Loader.Load(Serialise::LEVEL);
+//	}
+//	else
+//	{
+//		Loader.mFilename = "LevelOneSave";
+//		Loader.Load(Serialise::LEVEL);
+//	}
 
 	bool debugging = true;
-
-	Serialise Loader;
-	Loader.mFilename = "LevelOneTest";
-	Loader.Load(Serialise::LEVEL);
+	bool movedSinceSave = false;
 
 	cMaze MazeOne(Loader.mLoadedLevel);						// Creates a maze instance from the loaded level.
 	cPathfinder PathOne;									// Creates a pathfinder instance from the maze instance.
@@ -32,8 +44,6 @@ int main(int argn, char * args[])
 	SDL_Surface * spr_player = SDL_LoadBMP("../Sprites/bluesquare.bmp");
 	SDL_Surface * spr_goal = SDL_LoadBMP("../Sprites/goal.bmp");
 	SDL_Surface * spr_enemy = SDL_LoadBMP("../Sprites/enemy.bmp");
-		SDL_Surface * spr_cell_checked = SDL_LoadBMP("../Sprites/redchecked.bmp");
-		SDL_Surface * spr_space_checked = SDL_LoadBMP("../Sprites/whitechecked.bmp");
 
 	// Create window with render surface
 	SDL_Init(SDL_INIT_VIDEO);
@@ -98,19 +108,6 @@ int main(int argn, char * args[])
 					}
 					else
 					{
-						if (debugging)
-						{
-							SDL_Rect rect_cells_checked;
-
-							rect_cells_checked.x = x * spr_cell_checked->w;
-							rect_cells_checked.y = y * spr_cell_checked->h;
-							rect_cells_checked.w = spr_cell_checked->w;
-							rect_cells_checked.h = spr_cell_checked->h;
-
-							SDL_BlitSurface(spr_cells, NULL, renderSurface, &rect_cells_checked);
-						}
-						else
-						{
 							SDL_Rect rect_cells;
 
 							rect_cells.x = x * spr_cells->w;
@@ -119,7 +116,7 @@ int main(int argn, char * args[])
 							rect_cells.h = spr_cells->h;
 
 							SDL_BlitSurface(spr_cells, NULL, renderSurface, &rect_cells);
-						}
+						
 					}
 				}
 			}
@@ -223,6 +220,7 @@ int main(int argn, char * args[])
 					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
 					gridloc gl_nextMove = PathOne.NextMove();
 					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
+					movedSinceSave = true;
 					
 				}
 				break;
@@ -240,6 +238,7 @@ int main(int argn, char * args[])
 					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
 					gridloc gl_nextMove = PathOne.NextMove();
 					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
+					movedSinceSave = true;
 				}
 				break;
 
@@ -256,6 +255,7 @@ int main(int argn, char * args[])
 					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
 					gridloc gl_nextMove = PathOne.NextMove();
 					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
+					movedSinceSave = true;
 				}
 				break;
 
@@ -272,6 +272,7 @@ int main(int argn, char * args[])
 					PathOne.UpdateLocs(fl_playerX, fl_playerY, fl_enemyX, fl_enemyY, rect_player, rect_enemy);
 					gridloc gl_nextMove = PathOne.NextMove();
 					cout << "Next move is: " << gl_nextMove.xloc << ", " << gl_nextMove.yloc << endl;
+					movedSinceSave = true;
 				}
 				break;
 			}
@@ -383,6 +384,19 @@ int main(int argn, char * args[])
 		case QUIT:
 		{
 						quit = true;
+						
+						remove("LevelOneSave.lvl");
+						Serialise Saver(DefaultCode);
+						Saver.mFilename = "LevelOneSave";
+						Saver.mGl_player.xloc = fl_playerX / rect_player.w;
+						Saver.mGl_player.yloc = fl_playerY / rect_player.h;
+						Saver.mGl_enemy.xloc = fl_enemyX / rect_enemy.w;
+						Saver.mGl_enemy.yloc = fl_enemyY / rect_enemy.h;
+						Saver.mGl_goal.xloc = fl_goalX / rect_goal.w;
+						Saver.mGl_goal.yloc = fl_goalY / rect_goal.h;
+						Saver.Save(Serialise::LEVEL);
+						movedSinceSave = false;
+						
 		}
 		}
 

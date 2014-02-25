@@ -16,104 +16,6 @@ Serialise::Serialise(bool pLevel[338])
 	}
 }
 
-/* void Serialise::LoadLevel(){
-	std::ifstream loadedData(mFilename);				// This will only ever be called after mFilename has been combined.
-	int arrayIndex = 0;									// Position in the array
-	string line;
-	if (loadedData.is_open())
-	{
-		while (getline(loadedData, line))
-		{
-			if (line == "***")
-			{
-				return;
-			}
-			if (line == "0")
-			{
-				Serialise::mLoadedLevel[arrayIndex] = 0;
-				arrayIndex++;
-			}
-			if (line == "1")
-			{
-				Serialise::mLoadedLevel[arrayIndex] = 1;
-				arrayIndex++;
-			}
-			if (arrayIndex > 330)
-			{
-				if (line.find("p", 0))
-				{
-					Serialise::Positions(line, PLAYER);
-				}
-				if (line.find("e", 0))
-				{
-					Serialise::Positions(line, ENEMY);
-				}
-				if (line.find("g", 0))
-				{
-					Serialise::Positions(line, GOAL);
-				}
-			}
-
-		}
-
-		loadedData.close();								// Clean up after loading function.
-
-		return;
-
-	}
-}
-
-
-void Serialise::Positions(string pInput, int pEntity)
-{
-	switch (pEntity)
-	{
-	case PLAYER:
-	{
-				   if (pInput.find("x", 1))
-				   {
-					   mGl_player.xloc = NumberInString(pInput);
-					   cout << "Player - Find X" << pInput << endl;
-				   }
-				   if (pInput.find("y", 1))
-				   {
-					   mGl_player.yloc = NumberInString(pInput);
-					   cout << "Player - Find Y" << pInput << endl;
-				   }
-	}
-		break;
-	case ENEMY:
-	{
-				   if (pInput.find("x", 1))
-				   {
-					   mGl_enemy.xloc = NumberInString(pInput);
-					   cout << "Enemy - Find X" << pInput << endl;
-				   }
-				   if (pInput.find("y", 1))
-				   {
-					   mGl_enemy.yloc = NumberInString(pInput);
-					   cout << "Enemy - Find Y" << pInput << endl;
-				   }
-	}
-		break;
-	case GOAL:
-	{
-				   if (pInput.find("x", 1))
-				   {
-					   mGl_goal.xloc = NumberInString(pInput);
-					   cout << "Goal - Find X" << pInput << endl;
-				   }
-				   if (pInput.find("y", 1))
-				   {
-					   mGl_goal.yloc = NumberInString(pInput);
-					   cout << "Goal - Find Y" << pInput << endl;
-				   }
-	}
-		break;
-	}
-}
-*/
-
 void Serialise::Load(int pType)
 {
 	switch (pType)
@@ -265,16 +167,6 @@ void Serialise::Save(int pType)
 		savedData.close();					// Clean up by closing data stream.
 	}
 }
-
-/*
-int Serialise::NumberInString(string pInput)
-{
-	string digit;
-	digit = str pInput;			
-	return stoi(pInput);
-
-}
-*/
 
 Serialise::~Serialise()
 {

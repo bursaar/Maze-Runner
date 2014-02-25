@@ -665,10 +665,15 @@ gridloc cPathfinder::NextMove()
 	
 	sort(cell_nodeList_closed.begin(), cell_nodeList_closed.end());
 	
-	gridloc returnLoc = cell_nodeList_closed[0].mGl_location;
-	cell_nodeList_open.clear();
-	cell_nodeList_closed.clear();
-	return returnLoc;
+	if (!cell_nodeList_closed.empty())
+	{
+		gridloc returnLoc = cell_nodeList_closed[0].mGl_location;
+		cell_nodeList_open.clear();
+		cell_nodeList_closed.clear();
+		return returnLoc;
+	}
+
+	return gl_default;
 }
 
 void cPathfinder::SortOpenList(int index)
